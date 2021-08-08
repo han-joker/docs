@@ -8,7 +8,15 @@ export default defineUserConfig<DefaultThemeOptions>({
 
     base: '/docs/',
     dest: `./docs`,
-
+    head: [
+        [
+            'link', 
+            { 
+                rel: 'icon', 
+                href: '/docs/favicon.ico' 
+            }
+        ]
+    ],
     themeConfig: {
         logo: '/images/avatar.png',
         navbar: [
