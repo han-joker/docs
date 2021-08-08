@@ -6,6 +6,7 @@ export default defineUserConfig<DefaultThemeOptions>({
     title: '韩忠康的文档们',
     description: '韩忠康的文档们',
 
+    base: '/docs/',
     dest: `./docs`,
 
     themeConfig: {
