@@ -1,7 +1,7 @@
 ---
 home: true
 tagline: null
-footer: MIT Licensed | Copyright © 1985-present 韩忠康 | Powered by Vuepress
+footer: MIT Licensed | Copyright © 1985-present 韩忠康
 ---
 
 :::: code-group

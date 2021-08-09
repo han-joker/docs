@@ -19,6 +19,8 @@ export default defineUserConfig<DefaultThemeOptions>({
     ],
     themeConfig: {
         logo: '/images/avatar.png',
+        contributors: false,
+        lastUpdatedText: '更新时间',
         navbar: [
             {
                 text: 'Go',
@@ -214,9 +216,18 @@ export default defineUserConfig<DefaultThemeOptions>({
                 link: 'https://github.com/han-joker/',
             },
         ],
+        sidebarDepth: 1,
         sidebar: {
             '/go/': [
-                { text: '安装', link: 'install' },
+                { 
+                    text: 'Go', 
+                    children: [
+                        '/go/README.md',
+                        '/go/install.md',
+                        '/go/type-string.md',
+                    ],
+                },
+               
             ]
         },
     },
