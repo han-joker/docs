@@ -1,5 +1,7 @@
 import { defineUserConfig } from 'vuepress'
 import type { DefaultThemeOptions } from 'vuepress'
+import { path } from '@vuepress/utils'
+
 
 export default defineUserConfig<DefaultThemeOptions>({
     lang: 'zh-CN',
@@ -21,6 +23,10 @@ export default defineUserConfig<DefaultThemeOptions>({
         logo: '/images/avatar.png',
         contributors: false,
         lastUpdatedText: '更新时间',
+        notFound: [
+            '天可补，海可填，南山可移。日月既往，不可复追。——曾国藩',
+        ],
+        backToHome: '返回首页',
         navbar: [
             {
                 text: 'Go',
@@ -30,12 +36,16 @@ export default defineUserConfig<DefaultThemeOptions>({
                         link: '/go/',
                     },
                     {
-                        text: '包',
-                        children: [],
-                    },
-                    {
-                        text: '框架',
+                        text: 'Modules',
                         children: [
+                            {
+                                text: 'GORM',
+                                link: '/gorm/',
+                            },
+                            {
+                                text: 'GRPC',
+                                link: '/grpc/',
+                            },
                             {
                                 text: 'Gin',
                                 link: '/gin/',
@@ -146,17 +156,13 @@ export default defineUserConfig<DefaultThemeOptions>({
                         link: '/mysql/',
                     },
                     {
-                        text: 'SQLite',
-                        link: '/sqlite/',
-                    },
-                    {
                         text: 'Redis',
                         link: '/redis',
                     },
                 ],
             },
             {
-                text: '平台部署',
+                text: '工具部署',
                 children: [
                     {
                         text: 'Nginx',
@@ -172,12 +178,32 @@ export default defineUserConfig<DefaultThemeOptions>({
                     },
                     {
                         text: 'K8S',
-                        link: '/k8s',
+                        link: '/k8s/',
+                    },
+                    {
+                        text: '高可用',
+                        link: '/high-avaliable/',
+                    },
+                    {
+                        text: '负载均衡',
+                        link: '/load-blance/',
+                    },
+                    {
+                        text: "Let's Encrypt",
+                        link: '/tools/lets-encrypt.md',
+                    },
+                    {
+                        text: "mkcert",
+                        link: '/tools/mkcert.md',
+                    },
+                    {
+                        text: "Wireshark",
+                        link: '/tools/wireshark.md',
                     },
                 ],
             },
             {
-                text: '基础架构',
+                text: '协议算法',
                 children: [
                     {
                         text: '数据结构',
@@ -192,28 +218,20 @@ export default defineUserConfig<DefaultThemeOptions>({
                         link: '/design-pattern/',
                     },
                     {
-                        text: '高可用',
-                        link: '/high-avaliable',
-                    },
-                    {
-                        text: '负载均衡',
-                        link: '/load-blance',
-                    },
-                    {
                         text: 'HTTP',
-                        link: '/http',
+                        link: '/protocol/http.md',
                     },
                     {
-                        text: 'TCP/IP',
-                        link: '/tcpip',
+                        text: 'TCP',
+                        link: '/protocol/tcp.md',
                     },
 
                 ],
             },
             // NavbarItem
             {
-                text: 'GitHub',
-                link: 'https://github.com/han-joker/',
+                text: 'About',
+                link: '/about',
             },
         ],
         sidebarDepth: 1,
@@ -227,24 +245,106 @@ export default defineUserConfig<DefaultThemeOptions>({
                         '/go/type-string.md',
                     ],
                 },
-               
-            ]
+            ],
+            '/gin/': [
+                { 
+                    text: 'Gin', 
+                    children: [
+                        '/gin/README.md',
+                    ],
+                },
+            ],
+            '/gorm/': [
+                { 
+                    text: 'GORM', 
+                    children: [
+                        '/gorm/README.md',
+                    ],
+                },
+            ],
+            '/grpc/': [
+                { 
+                    text: 'GRPC', 
+                    children: [
+                        '/grpc/README.md',
+                    ],
+                },
+            ],
+            '/beego/': [
+                { 
+                    text: 'Beego', 
+                    children: [
+                        '/beego/README.md',
+                    ],
+                },
+            ],
+            '/php': [
+                {
+                    text: 'PHP',
+                    children: [
+                        '/php/README.md',
+                    ]
+                }
+            ],
+            '/laravel/': [
+                { 
+                    text: 'Laravel', 
+                    children: [
+                        '/laravel/README.md',
+                    ],
+                },
+            ],
+            '/protocol/': [
+                {
+                    text: '协议',
+                    children: [
+                        '/protocol/http.md',
+                        '/protocol/tcp.md',
+                        '/protocol/udp.md',
+                        '/protocol/ip.md',
+                    ]
+                }
+            ],
+            '/tools/':[
+                {
+                    text: 'Tools',
+                    children: [
+                        '/tools/mkcert.md',
+                        '/tools/lets-encrypt.md',
+                        '/tools/wireshark.md',
+                    ]
+                }
+            ],
+            '/about': [
+                '/about.md',
+            ],
         },
     },
     plugins: [
         [
-            'vuepress-plugin-comment',
+            '@vuepress/plugin-search',
             {
-                choosen: 'valine',
-                // options选项中的所有参数，会传给Valine的配置
-                options: {
-                    el: '#valine-vuepress-comment',
-                    appId: 'iIfHxFIJJVlgNohEu3SqNyOO-gzGzoHsz',// your appId
-                    appKey: 'GY0DMFiVCmakTPcypUL8IFIr', // your appKey
-                    placeholder: '雁过留声，人过留名',
-                    visitor: true,
-                }
-            }
-        ]
+                locales: {
+                  '/': {
+                    placeholder: 'Search',
+                  },
+                },
+              },
+        ],
+    
+        // [
+        //     'vuepress-plugin-comment',
+        //     {
+        //         choosen: 'valine',
+        //         // options选项中的所有参数，会传给Valine的配置
+        //         options: {
+        //             el: '#valine-vuepress-comment',
+        //             appId: 'iIfHxFIJJVlgNohEu3SqNyOO-gzGzoHsz',// your appId
+        //             appKey: 'GY0DMFiVCmakTPcypUL8IFIr', // your appKey
+        //             placeholder: '雁过留声，人过留名',
+        //             visitor: true,
+        //         }
+        //     }
+        // ]
     ]
 })
