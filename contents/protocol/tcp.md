@@ -179,6 +179,54 @@ TCP 头部结构图:
 - 紧急指针(16位): 紧急指针表示需要紧急处理的载荷数据的第一个字节的位置。该字段只有在设置了 URG 标志时才有效和相关。
 - Options(0 - 320位): 它提供了额外的选项。可选字段用32位表示。如果该字段包含小于32位的数据，则需要填充以获得剩余的位。
 
+WireShark 获取的 TCP 内容参考如下，该内容是建立连接的第二步，也就是服务端的 SYN-ACK 段：
+
+```
+Transmission Control Protocol, Src Port: 80, Dst Port: 50572, Seq: 0, Ack: 1, Len: 0
+    Source Port: 80
+    Destination Port: 50572
+    [Stream index: 3]
+    [TCP Segment Len: 0]
+    Sequence Number: 0    (relative sequence number)
+    Sequence Number (raw): 2023324573
+    [Next Sequence Number: 1    (relative sequence number)]
+    Acknowledgment Number: 1    (relative ack number)
+    Acknowledgment number (raw): 1259542717
+    1000 .... = Header Length: 32 bytes (8)
+    Flags: 0x012 (SYN, ACK)
+        000. .... .... = Reserved: Not set
+        ...0 .... .... = Nonce: Not set
+        .... 0... .... = Congestion Window Reduced (CWR): Not set
+        .... .0.. .... = ECN-Echo: Not set
+        .... ..0. .... = Urgent: Not set
+        .... ...1 .... = Acknowledgment: Set
+        .... .... 0... = Push: Not set
+        .... .... .0.. = Reset: Not set
+        .... .... ..1. = Syn: Set
+        .... .... ...0 = Fin: Not set
+        [TCP Flags: ·······A··S·]
+    Window: 65535
+    [Calculated window size: 65535]
+    Checksum: 0x570b [unverified]
+    [Checksum Status: Unverified]
+    Urgent Pointer: 0
+    Options: (12 bytes), Maximum segment size, No-Operation (NOP), Window scale, No-Operation (NOP), No-Operation (NOP), SACK permitted
+        TCP Option - Maximum segment size: 65475 bytes
+        TCP Option - No-Operation (NOP)
+        TCP Option - Window scale: 8 (multiply by 256)
+            Kind: Window Scale (3)
+            Length: 3
+            Shift count: 8
+            [Multiplier: 256]
+        TCP Option - No-Operation (NOP)
+        TCP Option - No-Operation (NOP)
+        TCP Option - SACK permitted
+            Kind: SACK Permitted (4)
+            Length: 2
+    [SEQ/ACK analysis]
+    [Timestamps]
+```
+
 ### 常见选项
 
 除了 TCP 头中包含的常规元数据外，在头选项中还可包含额外的内容。
@@ -210,40 +258,12 @@ TCP 头部结构图:
 
 ### 示例
 
-下面展示一个使用 [WireShark](../tools/wireshark.md) 获取的 TCP 数据段内容，该内容是建立连接的第二步，也就是服务端的 SYN-ACK 段：
+在仔细看一下 TCP 头的选项部分：
 
 ```
-Frame 20: 76 bytes on wire (608 bits), 76 bytes captured (608 bits) on interface \Device\NPF_Loopback, id 0
-Null/Loopback
-Internet Protocol Version 6, Src: ::1, Dst: ::1
-Transmission Control Protocol, Src Port: 80, Dst Port: 50572, Seq: 0, Ack: 1, Len: 0
-    Source Port: 80
-    Destination Port: 50572
-    [Stream index: 3]
-    [TCP Segment Len: 0]
-    Sequence Number: 0    (relative sequence number)
-    Sequence Number (raw): 2023324573
-    [Next Sequence Number: 1    (relative sequence number)]
-    Acknowledgment Number: 1    (relative ack number)
-    Acknowledgment number (raw): 1259542717
-    1000 .... = Header Length: 32 bytes (8)
-    Flags: 0x012 (SYN, ACK)
-        000. .... .... = Reserved: Not set
-        ...0 .... .... = Nonce: Not set
-        .... 0... .... = Congestion Window Reduced (CWR): Not set
-        .... .0.. .... = ECN-Echo: Not set
-        .... ..0. .... = Urgent: Not set
-        .... ...1 .... = Acknowledgment: Set
-        .... .... 0... = Push: Not set
-        .... .... .0.. = Reset: Not set
-        .... .... ..1. = Syn: Set
-        .... .... ...0 = Fin: Not set
-        [TCP Flags: ·······A··S·]
-    Window: 65535
-    [Calculated window size: 65535]
-    Checksum: 0x570b [unverified]
-    [Checksum Status: Unverified]
-    Urgent Pointer: 0
+...
+Transmission Control Protocol, Src Port: 80, Dst Port: 50572, Seq: 0, Ack: 1, Len: 
+	...
     Options: (12 bytes), Maximum segment size, No-Operation (NOP), Window scale, No-Operation (NOP), No-Operation (NOP), SACK permitted
         TCP Option - Maximum segment size: 65475 bytes
         TCP Option - No-Operation (NOP)

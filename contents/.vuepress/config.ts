@@ -239,6 +239,10 @@ export default defineUserConfig<DefaultThemeOptions>({
                                 link: '/protocol/amqp.md',
                             },
                             {
+                                text: 'ICMP',
+                                link: '/protocol/icmp.md',
+                            },
+                            {
                                 text: 'RPC',
                                 link: '/protocol/rpc.md',
                             },
@@ -338,6 +342,7 @@ export default defineUserConfig<DefaultThemeOptions>({
                     text: '协议',
                     children: [
                         '/protocol/amqp.md',
+                        '/protocol/icmp.md',
                         '/protocol/rpc.md',
                         '/protocol/rest.md',
                         '/protocol/http.md',
