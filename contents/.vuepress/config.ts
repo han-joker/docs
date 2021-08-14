@@ -5,7 +5,7 @@ import { path } from '@vuepress/utils'
 
 export default defineUserConfig<DefaultThemeOptions>({
     lang: 'zh-CN',
-    title: '韩忠康的文档们',
+    title: '红牛编程',
     description: '韩忠康的文档们',
 
     base: '/docs/',
@@ -19,6 +19,7 @@ export default defineUserConfig<DefaultThemeOptions>({
             }
         ]
     ],
+    theme: path.resolve(__dirname, 'theme'),
     themeConfig: {
         logo: '/images/avatar.png',
         contributors: false,
@@ -28,6 +29,83 @@ export default defineUserConfig<DefaultThemeOptions>({
         ],
         backToHome: '返回首页',
         navbar: [
+            {
+                text: 'JavaScript',
+                children: [
+                    {
+                        text: 'JavaScript',
+                        link: '/js/',
+                    },
+                    {
+                        text: 'TypeScript',
+                        link: '/ts/',
+                    },
+                    {
+                        text: '库',
+                        children: [
+                            {
+                                text: 'Momment',
+                                link: 'http://momentjs.cn/',
+                            },
+                            {
+                                text: 'Lodash',
+                                link: 'https://lodash.com/',
+                            },
+                        ],
+                    },
+                    {
+                        text: '前端产品',
+                        children: [
+                            {
+                                text: 'Vue',
+                                link: '/vue/',
+                            },
+                            {
+                                text: 'React',
+                                link: '/react/',
+                            },
+                            {
+                                text: 'JQuery',
+                                link: 'https://jquery.com/',
+                            },
+                            {
+                                text: 'Antd',
+                                link: 'https://ant.design/',
+                            },
+                            {
+                                text: 'element',
+                                link: 'https://element-plus.org/',
+                            },
+                        ],
+                    },
+                    {
+                        text: '服务端',
+                        children: [
+                            {
+                                text: 'NodeJS',
+                                link: '/nodejs/',
+                            },
+                            {
+                                text: 'EggJS',
+                                link: 'https://eggjs.org/zh-cn/index.html',
+                            },
+                        ],
+                    },
+                    {
+                        text: 'Other',
+                        children: [
+                            {
+                                text: 'HTML',
+                                link: '/html/',
+                            },
+                            {
+                                text: 'CSS',
+                                link: '/css/',
+                            },
+                        ]
+                    }
+                ],
+            },
             {
                 text: 'Go',
                 children: [
@@ -81,74 +159,6 @@ export default defineUserConfig<DefaultThemeOptions>({
                 ],
             },
             {
-                text: '前端 JS',
-                children: [
-                    {
-                        text: 'HTML',
-                        link: '/html/',
-                    },
-                    {
-                        text: 'CSS',
-                        link: '/css/',
-                    },
-                    {
-                        text: 'JavaScript',
-                        link: '/js/',
-                    },
-                    {
-                        text: 'TypeScript',
-                        link: '/ts/',
-                    },
-                    {
-                        text: 'NodeJS',
-                        link: '/nodejs/',
-                    },
-                    {
-                        text: '库',
-                        children: [
-                            {
-                                text: 'JQuery',
-                                link: 'https://jquery.com/',
-                            },
-                            {
-                                text: 'Momment',
-                                link: 'http://momentjs.cn/',
-                            },
-                            {
-                                text: 'Lodash',
-                                link: 'https://lodash.com/',
-                            },
-                        ],
-                    },
-                    {
-                        text: '框架',
-                        children: [
-                            {
-                                text: 'Vue',
-                                link: '/vue/',
-                            },
-                            {
-                                text: 'React',
-                                link: '/react/',
-                            },
-                        ],
-                    },
-                    {
-                        text: 'UI 组件',
-                        children: [
-                            {
-                                text: 'Antd',
-                                link: '/antd/',
-                            },
-                            {
-                                text: 'element',
-                                link: '/element/',
-                            },
-                        ],
-                    },
-                ],
-            },
-            {
                 text: '存储',
                 children: [
                     {
@@ -159,6 +169,10 @@ export default defineUserConfig<DefaultThemeOptions>({
                         text: 'Redis',
                         link: '/redis',
                     },
+                    {
+                        text: 'RabbitMQ',
+                        link: '/rabbitmq/'
+                    }
                 ],
             },
             {
@@ -218,14 +232,39 @@ export default defineUserConfig<DefaultThemeOptions>({
                         link: '/design-pattern/',
                     },
                     {
-                        text: 'HTTP',
-                        link: '/protocol/http.md',
+                        text: 'Protocol',
+                        children: [
+                            {
+                                text: 'AMQP',
+                                link: '/protocol/amqp.md',
+                            },
+                            {
+                                text: 'RPC',
+                                link: '/protocol/rpc.md',
+                            },
+                            {
+                                text: 'REST',
+                                link: '/protocol/rest.md',
+                            },
+                            {
+                                text: 'HTTP',
+                                link: '/protocol/http.md',
+                            },
+                            {
+                                text: 'TCP',
+                                link: '/protocol/tcp.md',
+                            },
+                            {
+                                text: 'UDP',
+                                link: '/protocol/udp.md',
+                            },
+                            {
+                                text: 'IP',
+                                link: '/protocol/ip.md',
+                            },
+                        ]
                     },
-                    {
-                        text: 'TCP',
-                        link: '/protocol/tcp.md',
-                    },
-
+                    
                 ],
             },
             // NavbarItem
@@ -298,6 +337,9 @@ export default defineUserConfig<DefaultThemeOptions>({
                 {
                     text: '协议',
                     children: [
+                        '/protocol/amqp.md',
+                        '/protocol/rpc.md',
+                        '/protocol/rest.md',
                         '/protocol/http.md',
                         '/protocol/tcp.md',
                         '/protocol/udp.md',
