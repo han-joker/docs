@@ -30,11 +30,6 @@ export default {
 </script>
 
 <style lang="scss">
-:root {
-  /* 主题色 */
-  --waline-theme-color: #ff0000 !important;
-  --waline-active-color: #ff0000 !important;
-}
 #waline {
   max-width: var(--content-width);
   margin: 0 auto;
