@@ -21,7 +21,7 @@ export default defineUserConfig<DefaultThemeOptions>({
     ],
     theme: path.resolve(__dirname, 'theme'),
     themeConfig: {
-        logo: '/images/avatar.png',
+        logo: '/images/logo.png',
         contributors: false,
         lastUpdatedText: '更新时间',
         notFound: [
@@ -251,6 +251,14 @@ export default defineUserConfig<DefaultThemeOptions>({
                                 link: '/protocol/rest.md',
                             },
                             {
+                                text: 'MQTT',
+                                link: '/protocol/mqtt.md',
+                            },
+                            {
+                                text: 'WebSocket',
+                                link: '/protocol/websocket.md',
+                            },
+                            {
                                 text: 'HTTP',
                                 link: '/protocol/http.md',
                             },
@@ -273,11 +281,11 @@ export default defineUserConfig<DefaultThemeOptions>({
             },
             // NavbarItem
             {
-                text: 'About',
+                text: '关于',
                 link: '/about',
             },
         ],
-        sidebarDepth: 1,
+        sidebarDepth: 2,
         sidebar: {
             '/go/': [
                 { 
@@ -342,6 +350,7 @@ export default defineUserConfig<DefaultThemeOptions>({
                     text: '协议',
                     children: [
                         '/protocol/amqp.md',
+                        '/protocol/mqtt.md',
                         '/protocol/icmp.md',
                         '/protocol/rpc.md',
                         '/protocol/rest.md',

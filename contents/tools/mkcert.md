@@ -1,3 +1,5 @@
+![](./assets/mkcert-logo.png)
+
 # mkcert
 
 Github：[https://github.com/FiloSottile/mkcert](https://github.com/FiloSottile/mkcert)。
@@ -65,6 +67,8 @@ sudo pacman -S nss
 sudo zypper install mozilla-nss-tools
 ```
 
+其次安装 mkcert：
+
 [二进制程序下载位置](https://github.com/FiloSottile/mkcert)，选择合适的版。例如：
 
 ```shell
@@ -98,4 +102,23 @@ brew install nss # if you use Firefox
 有了证书后，就可以使用该证书和 CA 了。
 
 例如：[使用 Nginx 搭建 HTTPS 服务器](#)。
+
+```nginx
+server {
+    listen       443 ssl http2;
+    listen  [::]:443 ssl http2;
+
+    #ssl证书地址
+    ssl_certificate     /localhost+2.pem;  # pem文件的路径
+    ssl_certificate_key  /localhost+2-key.pem; # key文件的路径
+
+    # ssl验证相关配置
+    ssl_session_timeout  5m;    #缓存有效期
+    ssl_ciphers ECDHE-RSA-AES128-GCM-SHA256:ECDHE:ECDH:AES:HIGH:!NULL:!aNULL:!MD5:!ADH:!RC4;    #加密算法
+    ssl_protocols TLSv1 TLSv1.1 TLSv1.2;    #安全链接可选的加密协议
+    ssl_prefer_server_ciphers on;   #使用服务器端的首选算法
+    
+    # 其他配置项略
+}
+```
 
