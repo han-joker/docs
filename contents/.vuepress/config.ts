@@ -345,6 +345,15 @@ export default defineUserConfig<DefaultThemeOptions>({
                     ],
                 },
             ],
+            '/nginx/': [
+                {
+                    text: 'NGINX',
+                    children: [
+                        '/nginx/README.md',
+                        '/nginx/http.md',
+                    ]
+                }
+            ],
             '/protocol/': [
                 {
                     text: '协议',

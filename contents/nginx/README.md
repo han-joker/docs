@@ -1,6 +1,6 @@
 ![](./assets/nginx-cover.png)
 
-# NGINX
+# 初见 NGINX
 
 [https://www.nginx.cn/](https://www.nginx.cn/)
 
