@@ -263,6 +263,14 @@ export default defineUserConfig<DefaultThemeOptions>({
                                 link: '/protocol/http.md',
                             },
                             {
+                                text: 'HTTPS',
+                                link: '/protocol/https.md',
+                            },
+                            {
+                                text: 'HTTP/2',
+                                link: '/protocol/http2.md',
+                            },
+                            {
                                 text: 'TCP',
                                 link: '/protocol/tcp.md',
                             },
@@ -364,6 +372,8 @@ export default defineUserConfig<DefaultThemeOptions>({
                         '/protocol/rpc.md',
                         '/protocol/rest.md',
                         '/protocol/http.md',
+                        '/protocol/https.md',
+                        '/protocol/http2.md',
                         '/protocol/tcp.md',
                         '/protocol/udp.md',
                         '/protocol/ip.md',

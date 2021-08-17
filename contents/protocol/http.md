@@ -39,28 +39,7 @@ IETF HTTP Working Group‘s Homepage: [https://httpwg.org/](https://httpwg.org/)
 
 ## HTTPS
 
-## HTTP/2
-
-Homepage: [https://http2.github.io/](https://http2.github.io/)
-
-官方文档：
-
-- [RFC7540](https://httpwg.org/specs/rfc7540.html)，HTTP2
-- [RFC7541](https://httpwg.github.io/specs/rfc7541.html)，HPACK -  HTTP/2 的头压缩
-
-HTTP/2 的主要升级是性能方面。最主要的改进是使用单个 TCP 连接来完成 C/S 端的全部会话通讯，使用二进制消息帧编码数据，支持多工通讯来提升传输效率。HTTP/2 并没有重写 HTTP 协议，HTTP 请求方式、响应状态码、和其他 API 等应用层面都是相同的。
-
-HTTP/2 是用来代替 HTTP/1 的，进而提升万维网的传输效率。
-
-这项工作的基础是 SPDY，加入了一些改进。
-
-> 谷歌于2009年公开了 SPDY 协议，W3C 将 SPDY 协议引入到 HTTP 协议中
-
-
-
-## 状态码
-
-| status code                 |      |      |
+| 状态码，status code         |      |      |
 | --------------------------- | ---- | ---- |
 | 200 ok                      |      |      |
 | 200 OK (from cache)         |      |      |
