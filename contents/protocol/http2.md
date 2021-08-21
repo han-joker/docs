@@ -65,7 +65,7 @@ HTTP/2 允许我们在获取资源时，指定资源的权重，进而通知服�
 
 服务器在获取到资源的优先相关信息时，会据此构建优先级树，来指导服务器的资源分配，包括 CPU、Memory、带宽等。优先级树，会依赖资源的依赖关系，资源权重，parent 资源权重等来确定。
 
-传输数据时，现根据依赖关系层级选择，当依赖层级相同时，在根据计算出来的**相对权重**选择。
+传输数据时，先根据依赖关系层级选择，当依赖层级相同时，再根据计算出来的**相对权重**选择。
 
 ```c
 // **相对权重**大概的计算方式如下：
@@ -93,7 +93,7 @@ HTTP/2 头压缩算法为 HPACK，思路是将请求和响应头中特定的关�
 | 58     | user-agent  | 可变的 user-agent 值 |
 | ....   |             |                      |
 
-这样，当浏览器发送 GET 方式请求时，仅仅需要在头帧（Frame）中发送数字 2，即可代表 GET method。同样当服务响应 200 状态码时，就可以直接返回 8 就ok了。当值不能预定义时，会把头字段对应的值存储到对应的 Header value 中。这张表称为**静态表:**。完整静态表见附录。
+这样，当浏览器发送 GET 方式请求时，仅仅需要在头帧（Frame）中发送数字 2，即可代表 GET method。同样当服务响应 200 状态码时，就可以直接返回 8 就ok了。当值不能预定义时，会把头字段对应的值存储到对应的 Header value 中。这张表称为**静态表**。完整静态表见附录。
 
 存储非预定义头（例如 `x-powered-by`）时，会使用另一张结构类似的表， 称为**动态表**。也会将每对头 Name:Value 做成索引。
 
@@ -104,7 +104,7 @@ HTTP/2 头压缩算法为 HPACK，思路是将请求和响应头中特定的关�
 | 68     | x-powered-by | some value   |
 | ...... | ......       | ......       |
 
-两个表结合，HPACK 就得到了全部使用的头 Name:Value 的索引集合。这个索引集合，B、S 两端同时维护，内容保持一致。这样，B/S 在传输时，仅仅需要传输索引号和变化的值即可，不在需要传递大量的重复数据了。
+两个表结合，HPACK 就得到了全部使用的头 Name:Value 的索引集合。这个索引集合，B、S 两端同时维护，内容保持一致。这样，B/S 在传输时，仅仅需要传输索引号和变化的值即可，不再需要传递大量的重复数据了。
 
 除此之外，传输数据时，头部还会采用静态霍夫曼编码来压缩数据，减少体积。
 
@@ -141,6 +141,266 @@ HTTP/2 在传输数据时，除了把数据切片为帧外，还会对数据进�
 其实，编码不同，我们一般在调试时也感受不到。即使是二进制编码，我们在乎的是最终的结果，也就是 HTTP 解码之后的结果！说白了，即使是 h2，即使是 https，我们还是可以在浏览器的调试工具中，看到我们发出的请求，以及收到的响应！
 
 对于，做底层抓包分析的工作人员，难度就提升了，例如我们用 wireshark 去抓包，就不容易分析具体内容了。当然了，这也和采用 TLS 传输（HTTPS）有关！
+
+### 服务器推送，server push
+
+故名思意，服务器主动将资源发送到浏览器端，称为推送！
+
+我们以 nginx 的实现为例，来了解一下服务器推送！
+
+#### http2_push 推送指令
+
+这个推送不是任意资源都推送，必须是被依赖的资源才可以推送，也需满足同源策略。例如：
+
+```html
+<!-- index.html -->
+<head>
+  <link rel="stylesheet" href="dist/css/adminlte.min.css">
+</head>
+<body>
+    <script src="dist/js/adminlte.js"></script>
+</body>
+```
+
+此时 nginx 配置，指令 `http2_push` 用于设置推送资源：
+
+```nginx
+location / {
+        root   /usr/share/nginx/html;
+        index  index.html index.htm;
+        http2_push /dist/css/adminlte.min.css;
+        http2_push /dist/js/adminlte.js;
+    }
+```
+
+> http2_push 需要使用带有绝对目录的相对地址。说白了，就是以 / 开头，表示从 root 目录开始。
+
+当浏览器针对该服务器请求 Index.html 资源时，就会将 `adminlte.min.css` 和 `adminlte.js` 推送到浏览器端，如图：
+
+![image-20210821111602843](./assets/image-20210821111602843.png)
+
+这个流程的思路如图所示：
+
+![image-20210821112253988](./assets/image-20210821112253988.png)
+
+#### 自动推送 http2_push_preload
+
+`http2_push` 指令推送时，需要配置大量的静态资源依赖关系。这个操作在很多情况下会不方便，或者受到限制。缘于此，Nginx 也支持基于响应头中的 Link preload 字段完成自动推送。响应头格式为：
+
+```http
+Link: </css/styles.css>; rel=preload; as=style
+Link: </css/styles.css>; rel=preload; as=style, </js/scripts.js>; rel=preload; as=script
+```
+
+自动推送使用配置 `http2_push_preload on|off` :
+
+```nginx
+location / {
+    root   /usr/share/nginx/html;
+    index  index.html index.htm;
+    proxy_pass http://upstream;
+    http2_push_preload on;
+}
+```
+
+nginx 服务器虽开启了自动推送，但 nginx 不能确定哪些资源要自动推送。这个需要后端程序来完成，nginx 通过 `upstream` 指令与后端程序交互，例如 Go, PHP 等：
+
+PHP：
+
+```php
+header("Link: </dist/css/adminlte.min.css>; rel=preload; as=style");
+header("Link: </dist/js/adminlte.js>; rel=preload; as=script");
+```
+
+Go
+
+```go
+mux := http.NewServeMux()
+mux.HandleFunc("/", func(w http.ResponseWriter, req *http.Request) {
+        w.Header().Add("Link", "</dist/css/adminlte.min.css>; rel=preload; as=style");
+        w.Header().Add("Link", "</dist/js/adminlte.js>; rel=preload; as=script");
+    })
+```
+
+> 如果服务器或者浏览器不支持 HTTP/2，那么浏览器就会按照 preload 来处理这个头信息，预加载指定的资源文件。
+
+#### 选择性推送
+
+服务器推送一个小 bug 是，服务器不确定浏览器是否真正需要该资源。例如，浏览器已经缓存了 `/style.css` ，那么就不需要推该资源了。一个示例，在 cookie 中有 `session=1` 时，不推送，没有该字段时推送，示例来自 https://www.nginx.com/blog/nginx-1-13-9-http2-server-push/： 
+
+```nginx
+server {
+    http2_push_preload on;
+
+    location = /demo.html {
+        add_header Set-Cookie "session=1";
+        add_header Link $resources;
+    }
+}
+
+map $http_cookie $resources {
+    "~*session=1" "";
+    default "</style.css>; as=style; rel=preload, </image1.jpg>; as=image; rel=preload, </image2.jpg>; as=image; rel=preload";
+}
+```
+
+该逻辑通常在后端应用处理。
+
+## 数据帧，Frame
+
+HTTP/2 数据传输最小的单位是帧，Frame，所有的数据包括，head、body 都会打包到 Frame 发送。
+
+Frame 是在数据传输流中的每个数据切片，为了标识 Frame 属于哪个流 Stream，Frame 结构会有  Stream ID 字段标识所属的数据流。
+
+基于传输内容不同，Frame 分为很多类型，例如 Header、Data、PRIORITY 等。
+
+### 帧格式，format
+
+帧由 Header 和 Payload 组成，Header 长度固定，9 Bytes，72 bits。
+
+格式如下：
+
+```
+ +-----------------------------------------------+
+ |                 Length (24)                   |
+ +---------------+---------------+---------------+
+ |   Type (8)    |   Flags (8)   |
+ +-+-------------+---------------+-------------------------------+
+ |R|                 Stream Identifier (31)                      |
+ +=+=============================================================+
+ |                   Frame Payload (0...)                      ...
+ +---------------------------------------------------------------+
+```
+
+字段说明如下：
+
+- Length，荷载数据长度，24 位无符号整型可表示最大数 16,384(2^14)，意味着 PayLoad 数据最大长度为 16,384。
+- Type，帧类型
+- Flags，标志位
+- R，保留位
+- Stream Identifier，流 ID，标识 Frame 所属的流
+- Frame Payload，荷载数据
+
+### 帧类型，type
+
+| Frame Type    | Code |                                                              |
+| ------------- | ---- | ------------------------------------------------------------ |
+| DATA          | 0x0  | 数据帧，请求或响应主体帧                                     |
+| HEADERS       | 0x1  | 头帧，请求或响应头                                           |
+| PRIORITY      | 0x2  | 优先级帧，发送方对流优先级权重的建议值                       |
+| RST_STREAM    | 0x3  | 强制停止帧，关闭对应流，接收者不能够在此流上发送任何帧       |
+| SETTINGS      | 0x4  | 设置帧，接收者向发送者通告己方设定，服务器端在连接成功后必须第一个发送的帧 |
+| PUSH_PROMISE  | 0x5  | 推送准备帧，服务器端通知对端准备推送数据                     |
+| PING          | 0x6  | Ping 帧，测试响应时间，心跳机制用于检测空闲连接是否有效      |
+| GOAWAY        | 0x7  | 优雅停止帧，通知对方关闭流，但需要完成未完成的任务           |
+| WINDOW_UPDATE | 0x8  | 窗口升级帧，用于流量控制                                     |
+| CONTINUATION  | 0x9  | 延续帧，一个HEADERS/PUSH_PROMISE 帧后面会跟随零个或多个 CONTINUATION，只要上一个帧没有设置END_HEADERS 标志位 |
+
+更详细的信息请参考：[https://datatracker.ietf.org/doc/html/rfc7540#section-6](https://datatracker.ietf.org/doc/html/rfc7540#section-6)
+
+列举几个类型的帧载荷结构
+
+DATA 类型的 PayLoad：
+
+```
++---------------+
+|Pad Length? (8)|
++---------------+-----------------------------------------------+
+|                            Data (*)                         ...
++---------------------------------------------------------------+
+|                           Padding (*)                       ...
++---------------------------------------------------------------+
+```
+
+字段说明：
+
+- Pad Length，填充长度
+- Data，应用数据
+- Padding，填充
+
+
+
+HEADER 类型的 PayLoad：
+
+```
++---------------+
+|Pad Length? (8)|
++-+-------------+-----------------------------------------------+
+|E|                 Stream Dependency? (31)                     |
++-+-------------+-----------------------------------------------+
+|  Weight? (8)  |
++-+-------------+-----------------------------------------------+
+|                   Header Block Fragment (*)                 ...
++---------------------------------------------------------------+
+|                           Padding (*)                       ...
++---------------------------------------------------------------+
+```
+
+字段说明：
+
+- Pad Length，填充长度
+- E，是否依赖专用位
+- Stream Dependency，流依赖
+- Weight，优先级权重
+- Header Block Fragment，头块分段
+- Padding，填充
+
+
+
+SETTING 类型的 PayLoad：
+
+```
++-------------------------------+
+|       Identifier (16)         |
++-------------------------------+-------------------------------+
+|                        Value (32)                             |
++---------------------------------------------------------------+
+```
+
+字段说明：
+
+- Identifier，配置项标识
+- Value，配置项值
+
+### 标志位，flag
+
+下表展示了 Frame 类型和标志可能的组合关系，引用自 [https://metacpan.org/release/CRUX/Protocol-HTTP2-0.14/view/lib/Protocol/HTTP2/Frame.pm](https://metacpan.org/release/CRUX/Protocol-HTTP2-0.14/view/lib/Protocol/HTTP2/Frame.pm)：
+
+```
+Table represent possible combination of frame types and flags.
+Last column -- Stream ID of frame types (x -- sid >= 1, 0 -- sid = 0)
+ 
+ 
+                    +-END_STREAM 0x1
+                    |   +-ACK 0x1
+                    |   |   +-END_HEADERS 0x4
+                    |   |   |   +-PADDED 0x8
+                    |   |   |   |   +-PRIORITY 0x20
+                    |   |   |   |   |        +-stream id (value)
+                    |   |   |   |   |        |
+| frame type\flag | V | V | V | V | V |   |  V  |
+| --------------- |:-:|:-:|:-:|:-:|:-:| - |:---:|
+| DATA            | x |   |   | x |   |   |  x  |
+| HEADERS         | x |   | x | x | x |   |  x  |
+| PRIORITY        |   |   |   |   |   |   |  x  |
+| RST_STREAM      |   |   |   |   |   |   |  x  |
+| SETTINGS        |   | x |   |   |   |   |  0  |
+| PUSH_PROMISE    |   |   | x | x |   |   |  x  |
+| PING            |   | x |   |   |   |   |  0  |
+| GOAWAY          |   |   |   |   |   |   |  0  |
+| WINDOW_UPDATE   |   |   |   |   |   |   | 0/x |
+| CONTINUATION    |   |   | x | x |   |   |  x  |
+```
+
+几个标志位含义为：
+
+- END_STREAM 0x1，结束流
+- ACK 0x1，确认
+- END_HEADERS 0x4，结束头
+- PADDED 0x8，填充
+- PRIORITY 0x20，优先
+
+
 
 ## 附录
 
