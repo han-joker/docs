@@ -172,6 +172,16 @@ export default defineUserConfig<DefaultThemeOptions>({
                     {
                         text: 'RabbitMQ',
                         link: '/rabbitmq/'
+                    },
+                    {
+                        text: "Pattern",
+                        children: [
+                            "/storage/cache-pattern.md"
+                            // {
+                                // text: "缓存模式",
+                                // link: "/storage/cache-pattern.md"
+                            // }
+                        ]
                     }
                 ],
             },
