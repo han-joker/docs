@@ -403,6 +403,9 @@ export default defineUserConfig<DefaultThemeOptions>({
             '/about': [
                 '/about.md',
             ],
+            "/storage/": [
+                "/storage/cache-pattern.md"
+            ]
         },
     },
     plugins: [
